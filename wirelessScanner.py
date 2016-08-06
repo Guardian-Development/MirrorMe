@@ -1,6 +1,7 @@
 import subprocess as sub
 import sys
 import re
+import configureISC_DHCP_Server as config 
 
 #prints all the information about the available wireless networks out. 
 def searchWirelessNetworks():
@@ -14,7 +15,8 @@ def searchWirelessNetworks():
     regex = re.compile(pattern, re.IGNORECASE)
     for match in regex.finditer(output):
         print match.group(0)
-    print("complete search") 
+    print("complete search")
+    config.testFunction() 
 
 #ENTRY POINT
 if __name__ == "__main__":
