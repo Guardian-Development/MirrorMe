@@ -1,10 +1,12 @@
 import os
 import sys
 import fileinput
+import subprocess as sub
 
 def configure():
     makeChangesDHCPConf()
     makeChangesISCDHCPServer()
+    makeChangeInterface()
 
 #configure fliles for DHCP the service responsible for assigning addresses to devices on the network. 
 def makeChangesDHCPConf():
@@ -62,27 +64,39 @@ def makeChangesISCDHCPServer():
     #write changes back
     with open(pathName, 'w') as file:
         file.write(filedata)
-        print("changes made") 
+        print("changes made")
 
+#Brings down your wireless card to make changes to the interfaces file. 
+def makeChangeInterface():
 
-#ENTRY POINT
-if __name__ == "__main__":
-    configure()
-    print("complete change") 
-
-    #NEXT STEPS sudo ifdown wlan0....
-
+    pathNameOld = '/home/pi/Documents/Python Projects/testInterfaces.txt'
+    pathNameNew = './interfaces.txt'
+    filedata = None
     
-    #new file
-    #before open make sure WLAN is down 
-    #open it
-    #add code to make file look like image
+    #make Linux command call to make sure WLAN interface is down. 
+    out = sub.Popen(['sudo', 'ifdown', 'wlan0'],stdout=sub.PIPE, stderr=sub.PIPE)
+    output, errors = out.communicate()
+    print("wireless interface down")
 
-    #new python file
-    #configure HostAPD
-    #open file
-    #change wifi name to be the target wifi's name
-    #change password to be password (come back to this)
+    #check files exists
+    if not os.path.isfile(pathNameOld):
+        print("can't find original interface")
+        sys.exit(1)
+    if not os.path.isfile(pathNameNew):
+        print("can't find new interfaces file")
+        sys.exit(1)
+
+    print("files all exist") 
+    #open new file and read from it
+    with open(pathNameNew, 'r') as file:
+        filedata = file.read()
+        print("reading new interfaces file.")
+
+    #write contents to old file replacing it
+    with open(pathNameOld, 'w') as file:
+        file.write(filedata)
+        print("overwritten interfaces file")
+
 
     #Enable NAT (allows internet access)
     #open file
