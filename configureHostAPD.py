@@ -4,7 +4,7 @@ import fileinput
 
 def configure(name, password):
     filedata = None
-    pathName = '/home/pi/Documents/Python Projects/testHostapd.txt'
+    pathName = '/etc/hostapd/hostapd.conf'
     newWifiName = "ssid=" + name
     newWifiPassword = "wpa_passphrase=" + password
 

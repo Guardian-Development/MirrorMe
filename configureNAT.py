@@ -3,9 +3,10 @@ import sys
 import fileinput
 import subprocess as sub
 
+#configure the NAT to link the ethernet and wireless card allowing internet access. 
 def configure():
     filedata = None
-    pathName = '/home/pi/Documents/Python Projects/testSysctl.txt'
+    pathName = '/etc/sysctl.conf'
 
     #check file path exists
     if not os.path.isfile(pathName):
@@ -43,7 +44,32 @@ def configure():
                     stdout=sub.PIPE, stderr=sub.PIPE)
     sub.Popen(['sudo', 'service', 'hostapd', 'start'],
                     stdout=sub.PIPE, stderr=sub.PIPE)
+    print("configure NAT completed") 
 
+#during raspberry pi restarts keep the network enabled. 
 def enablePersistantState():
-    #last thing to do before attempting for real. 
+    filedata = None
+    path = '/etc/network/interfaces'
+
+    print("enabling persistant state...") 
+    #make Linux command call to enable need to login on every reboot. 
+    sub.Popen(['sudo', 'update-rc.d', 'hostapd', 'enable' ],
+                    stdout=sub.PIPE, stderr=sub.PIPE)
+    sub.Popen(['sudo', 'update-rc.d', 'isc-dhcp-server', 'enable' ],
+                    stdout=sub.PIPE, stderr=sub.PIPE)
+
+    #Backup NAT configuration
+    sub.Popen(['sudo', 'sh', '-c', '"iptables-save > /etc/iptables.ipv4.nat"' ],
+                    stdout=sub.PIPE, stderr=sub.PIPE)
+    
+    #Restore configuration when network comes up
+    if not os.path.isfile(path):
+        print("can't find interface file")
+        sys.exit(1)
+    
+    with open(path, 'a') as file:
+        file.write("up iptables-restore < etc/iptables.ipv4.nat")
+        print("wrote configuration changes...")
+
+    print("persistant state enabled") 
     

@@ -3,15 +3,17 @@ import sys
 import fileinput
 import subprocess as sub
 
+#use this method to configure DHCP server. 
 def configure():
     makeChangesDHCPConf()
     makeChangesISCDHCPServer()
     makeChangeInterface()
+    print("configure DHCP server completed") 
 
 #configure fliles for DHCP the service responsible for assigning addresses to devices on the network. 
 def makeChangesDHCPConf():
     filedata = None
-    pathName = '/home/pi/Documents/Python Projects/testText.txt'
+    pathName = '/etc/dhcp/dhcpd.conf'
     usingSubnet= 'subnet 192.168.10.0 netmask 255.255.255.0 {\r\n range 192.168.10.10 192.168.10.20;\r\n option broadcast-address 192.168.10.255;\r\n option routers 192.168.10.1;\r\n default-lease-time 600;\r\n max-lease-time 7200;\r\n option domain-name \"local-network\";\r\n option domain-name-servers 8.8.8.8, 8.8.4.4;\r\n}'
 
     #check file path exists. 
@@ -42,10 +44,12 @@ def makeChangesDHCPConf():
         file.write(usingSubnet)
         print("subnet added")
 
+    print("make changes to DHCP configuration file completed") 
+
 #make the DHCP server hand out addresses on the wireless interface. 
 def makeChangesISCDHCPServer():
     filedata = None
-    pathName = '/home/pi/Documents/Python Projects/testServer.txt'
+    pathName = '/etc/default/isc-dhcp-server'
 
     #check file path exists
     if not os.path.isfile(pathName):
@@ -66,10 +70,12 @@ def makeChangesISCDHCPServer():
         file.write(filedata)
         print("changes made")
 
+    print("make changes to DHCP Server completed") 
+
 #Brings down your wireless card to make changes to the interfaces file. 
 def makeChangeInterface():
 
-    pathNameOld = '/home/pi/Documents/Python Projects/testInterfaces.txt'
+    pathNameOld = '/etc/network/interfaces'
     pathNameNew = './interfaces.txt'
     filedata = None
     
@@ -86,7 +92,6 @@ def makeChangeInterface():
         print("can't find new interfaces file")
         sys.exit(1)
 
-    print("files all exist") 
     #open new file and read from it
     with open(pathNameNew, 'r') as file:
         filedata = file.read()
@@ -97,16 +102,5 @@ def makeChangeInterface():
         file.write(filedata)
         print("overwritten interfaces file")
 
-
-    #Enable NAT (allows internet access)
-    #open file
-    #scroll down to last line and add code
-
-    #run command to start router
-
-    #set up translation between ethernet port and wireless card.
-
-    #start wireless router
-
-    #provide persistance of network (maybe this is optional flag) 
+    print("make changes to the interface completed") 
     
