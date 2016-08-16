@@ -42,7 +42,7 @@ def configure():
 #during raspberry pi restarts keep the network enabled. 
 def enablePersistantState():
     filedata = None
-    oldpath = '/etc/rc.local'
+    oldPath = '/etc/rc.local'
     newPath = './rc.local'
 
     print("enabling persistant state...") 
@@ -51,7 +51,7 @@ def enablePersistantState():
                     stdout=sub.PIPE, stderr=sub.PIPE)
     
     #Restore configuration when network comes up
-    if not os.path.isfile(oldpath):
+    if not os.path.isfile(oldPath):
         print("can't find rc.local file")
         sys.exit(1)
     if not os.path.isfile(newPath):

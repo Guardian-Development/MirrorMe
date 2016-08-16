@@ -56,7 +56,7 @@ def setupOnBootConfigFile():
     filedata = filedata.replace('#DAEMON_CONF=""', 'DAEMON_CONF="/etc/hostapd/hostapd.conf"')
 
     with open(pathName, 'w') as file:
-        file.write(fileData)
+        file.write(filedata)
         print "completed writing to hostapd default file"
 
     print "completed the setup of the boot config file"
