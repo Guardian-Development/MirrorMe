@@ -1,7 +1,6 @@
 import subprocess as sub
 import sys
 import re
-import configureISC_DHCP_Server as config 
 
 #prints all the information about the available wireless networks out. 
 def searchWirelessNetworks():

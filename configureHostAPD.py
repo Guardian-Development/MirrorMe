@@ -1,30 +1,72 @@
 import os
 import sys
 import fileinput
+import subprocess as sub
 
-def configure(name, password):
+def execute():
+    createConfigFile()
+    populateConfigFile()
+    setupOnBootConfigFile()
+
+def createConfigFile():
+    out = sub.Popen(['sudo', 'touch', '/etc/hostapd/hostapd.conf'], stdout=sub.PIPE, stderr=sub.PIPE)
+    output, errors = out.communicate()
+    print errors
+    print "completed creating the hostapd.conf file (empty)"
+
+def populateConfigFile():
     filedata = None
-    pathName = '/etc/hostapd/hostapd.conf'
-    newWifiName = "ssid=" + name
-    newWifiPassword = "wpa_passphrase=" + password
+    pathNameOld = '/etc/hostapd/hostapd.conf'
+    pathNameNew = './hostapdconfig.txt'
 
-    #check file path exists. 
+    #check file exists
+    if not os.path.isfile(pathNameNew):
+        print "can't find hostapd.conf file"
+        sys.exit(1)
+    if not os.path.isfile(pathNameOld):
+        print "can't find the old hostapd.conf file"
+        sys.exit(1)
+
+    #write to file
+    with open(pathNameNew, 'r') as file:
+        filedata = file.read()
+        print "reading new hostapd conf file"
+
+    with open(pathNameOld, 'w') as file:
+        file.write(filedata)
+        print "overwritten the hostapd conf file"
+
+    print "populated config file complete"
+
+def setupOnBootConfigFile():
+    filedata = None
+    pathName = '/etc/default/hostapd'
+
+    #check file path exists
     if not os.path.isfile(pathName):
-       print("file doesn't exist")
-       sys.exit(1)
+        print "can't find the default hostapd file"
+        sys.exit(1)
 
-    #open the file and read contents
     with open(pathName, 'r') as file:
         filedata = file.read()
-        print("reading file...")
+        print "reading hostapd default file"
 
-    #make updates to the file that we require.
-    print("making changes...")
-    filedata = filedata.replace('ssid=wifi', newWifiName)
-    filedata = filedata.replace('wpa_passphrase=YourPassPhrase',
-                                newWifiPassword)
+    print "making changes to the default hostapd file"
 
-    #write changes back to file
+    filedata = filedata.replace('#DAEMON_CONF=""', 'DAEMON_CONF="/etc/hostapd/hostapd.conf"')
+
     with open(pathName, 'w') as file:
-        file.write(filedata)
-        print("changes made")
+        file.write(fileData)
+        print "completed writing to hostapd default file"
+
+    print "completed the setup of the boot config file"
+
+    
+        
+
+
+
+
+
+
+    

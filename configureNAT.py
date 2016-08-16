@@ -3,6 +3,11 @@ import sys
 import fileinput
 import subprocess as sub
 
+def execute():
+    configure()
+    enablePersistantState()
+    startRouter() 
+
 #configure the NAT to link the ethernet and wireless card allowing internet access. 
 def configure():
     filedata = None
@@ -23,11 +28,6 @@ def configure():
     sub.Popen(['sudo', 'sh', '-c', '"echo 1 > /proc/sys/net/ipv4/ip_forward"' ],
                     stdout=sub.PIPE, stderr=sub.PIPE)
 
-    print("bringing wirless card back up..")
-    #make Linux command call to bring wirless card back up. 
-    sub.Popen(['sudo', 'ifup', 'wlan0'],
-                    stdout=sub.PIPE, stderr=sub.PIPE)
-
     #set up translation between ethernet port and wirless card
     print("Setting up translation between ethernet and wireless..")
     sub.Popen(['sudo', 'iptables', '-t', 'nat', '-A', 'POSTROUTING', '-o', '-j', 'MASQUERADE'],
@@ -37,39 +37,41 @@ def configure():
                     stdout=sub.PIPE, stderr=sub.PIPE)
     sub.Popen(['sudo', 'iptables', '-A', 'FORWARD', '-i', 'wlan0', '-o', 'eth0', '-j', 'ACCEPT'],
                     stdout=sub.PIPE, stderr=sub.PIPE)
-
-    #Start wireless router
-    print("wirless router starting..") 
-    sub.Popen(['sudo', 'service', 'isc-dhcp-server', 'start'],
-                    stdout=sub.PIPE, stderr=sub.PIPE)
-    sub.Popen(['sudo', 'service', 'hostapd', 'start'],
-                    stdout=sub.PIPE, stderr=sub.PIPE)
     print("configure NAT completed") 
 
 #during raspberry pi restarts keep the network enabled. 
 def enablePersistantState():
     filedata = None
-    path = '/etc/network/interfaces'
+    oldpath = '/etc/rc.local'
+    newPath = './rc.local'
 
     print("enabling persistant state...") 
-    #make Linux command call to enable need to login on every reboot. 
-    sub.Popen(['sudo', 'update-rc.d', 'hostapd', 'enable' ],
-                    stdout=sub.PIPE, stderr=sub.PIPE)
-    sub.Popen(['sudo', 'update-rc.d', 'isc-dhcp-server', 'enable' ],
-                    stdout=sub.PIPE, stderr=sub.PIPE)
-
     #Backup NAT configuration
     sub.Popen(['sudo', 'sh', '-c', '"iptables-save > /etc/iptables.ipv4.nat"' ],
                     stdout=sub.PIPE, stderr=sub.PIPE)
     
     #Restore configuration when network comes up
-    if not os.path.isfile(path):
-        print("can't find interface file")
+    if not os.path.isfile(oldpath):
+        print("can't find rc.local file")
         sys.exit(1)
+    if not os.path.isfile(newPath):
+        print "can't find new rc.local file"
     
-    with open(path, 'a') as file:
-        file.write("up iptables-restore < etc/iptables.ipv4.nat")
-        print("wrote configuration changes...")
+    
+    with open(newPath, 'r') as file:
+        filedata = file.read()
+        print("read config changes")
+    with open(oldPath, 'w') as file:
+        file.write(filedata)
+        print "wrote changes to rc.local file"
 
     print("persistant state enabled") 
-    
+
+def startRouter():
+    #Start wireless router
+    print("wirless router starting..") 
+    sub.Popen(['sudo', 'service', 'hostapd', 'start'],
+                    stdout=sub.PIPE, stderr=sub.PIPE)
+    sub.Popen(['sudo', 'service', 'dnsmasq', 'start'],
+                    stdout=sub.PIPE, stderr=sub.PIPE)
+    print "started router"

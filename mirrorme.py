@@ -1,9 +1,9 @@
 import subprocess as sub
 import sys
 import re
-import configureISC_DHCP_Server as dhcpConfig
-import configureNAT as natConfig
-import configureHostAPD as apdConfig
+import configureInterfaces as interfaces
+import configureHostAPD as hostAPD
+import configureNAT as NAT
 import wirelessScanner as scanner 
 
 #ENTRY POINT
@@ -20,8 +20,7 @@ if __name__ == "__main__":
 
     #CONFIGURE OPERATION SPECIFIED
     if sys.argv[1] == "configure":
-        dhcpConfig.configure()
-        apdConfig.configure("JoePiNetwork", "password")
-        natConfig.configure()
-        natConfig.enablePersistantState() 
+        interfaces.execute()
+        hostAPD.execute()
+        NAT.execute() 
         
