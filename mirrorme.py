@@ -3,6 +3,7 @@ import sys
 import re
 import configureInterfaces as interfaces
 import configureHostAPD as hostAPD
+import configureDNSMASQ as DNSMASQ
 import configureNAT as NAT
 import wirelessScanner as scanner 
 
@@ -22,5 +23,6 @@ if __name__ == "__main__":
     if sys.argv[1] == "configure":
         interfaces.execute()
         hostAPD.execute()
+        DNSMASQ.execute()
         NAT.execute() 
         
