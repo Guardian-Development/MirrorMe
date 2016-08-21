@@ -18,3 +18,6 @@ restart your pi
 sudo service hostapd start
 
 sudo service dnsmasq start 
+
+#Start Transmitting
+sudo /usr/sbin/hostapd /etc/hostapd/hostapd.conf
