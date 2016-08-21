@@ -25,32 +25,23 @@ def configure():
 
     print("start translation for ip..")
     #make Linux command call to start translation
-    out = sub.Popen(['sudo', 'sh', '-c', '"echo 1 > /proc/sys/net/ipv4/ip_forward"' ],
-                    stdout=sub.PIPE, stderr=sub.PIPE)
-    output, errors = out.communicate()
-    print output
-    print errors
+    proc = sub.call('sudo sh -c \"echo 1 > /proc/sys/net/ipv4/ip_forward\"', shell=True)
+    print proc
 
     #set up translation between ethernet port and wirless card
     print("Setting up translation between ethernet and wireless..")
-    out = sub.Popen(['sudo', 'iptables', '-t', 'nat', '-A', 'POSTROUTING', '-o', '-j', 'MASQUERADE'],
-                    stdout=sub.PIPE, stderr=sub.PIPE)
-    output, errors = out.communicate()
-    print output
-    print errors
+    
+    out = sub.call('sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE',shell=True)
+    print "masquerade command"
+    print out
 
-    out = sub.Popen(['sudo', 'iptables', '-A', 'FORWARD', '-i', 'eth0', '-o', 'wlan0', '-m', 'state',
-               '--state', 'RELATED,ESTABLISHED', '-j', 'ACCEPT'],
-                    stdout=sub.PIPE, stderr=sub.PIPE)
-    output, errors = out.communicate()
-    print output
-    print errors
+    out = sub.call('sudo iptables -A FORWARD -i eth0 -o wlan0 -m state --state RELATED,ESTABLISHED -j ACCEPT', shell=True)
+    print "related established command"
+    print out
 
-    sub.Popen(['sudo', 'iptables', '-A', 'FORWARD', '-i', 'wlan0', '-o', 'eth0', '-j', 'ACCEPT'],
-                    stdout=sub.PIPE, stderr=sub.PIPE)
-    output, errors = out.communicate()
-    print output
-    print errors
+    out = sub.Popen('sudo iptables -A FORWARD -i wlan0 -o eth0 -j ACCEPT', shell=True)
+    print "forward command"
+    print out
 
     print("configure NAT completed")
 
@@ -90,7 +81,7 @@ def startRouter():
     print("wirless router starting..")
     out = sub.Popen(['sudo', 'service', 'hostapd', 'start'],
                     stdout=sub.PIPE, stderr=sub.PIPE)
-    output. errors = out.communicate()
+    output, errors = out.communicate()
     print output
     print errors
 

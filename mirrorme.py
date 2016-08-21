@@ -21,8 +21,8 @@ if __name__ == "__main__":
 
     #CONFIGURE OPERATION SPECIFIED
     if sys.argv[1] == "configure":
-        interfaces.execute()
-        hostAPD.execute()
+        #interfaces.execute()
+        #hostAPD.execute()
         DNSMASQ.execute()
         NAT.execute() 
         

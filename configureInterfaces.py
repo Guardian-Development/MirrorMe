@@ -52,7 +52,7 @@ def configureStaticIP():
     print "make changes to the interfaces file complete"
 
 def restartServices():
-    out = sub.Popen(['sudo', 'service', 'dhcpcp', 'restart'], stdout=sub.PIPE, stderr=sub.PIPE)
+    out = sub.Popen(['sudo', 'service', 'dhcpcd', 'restart'], stdout=sub.PIPE, stderr=sub.PIPE)
     output, errors = out.communicate()
     print output
     print errors
