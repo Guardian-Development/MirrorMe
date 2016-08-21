@@ -30,7 +30,7 @@ def configure():
 
     #set up translation between ethernet port and wirless card
     print("Setting up translation between ethernet and wireless..")
-    
+
     out = sub.call('sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE',shell=True)
     print "masquerade command"
     print out
@@ -53,11 +53,9 @@ def enablePersistantState():
 
     print("enabling persistant state...")
     #Backup NAT configuration
-    out = sub.Popen(['sudo', 'sh', '-c', '"iptables-save > /etc/iptables.ipv4.nat"' ],
-                    stdout=sub.PIPE, stderr=sub.PIPE)
-    output, errors = out.communicate()
-    print output
-    print errors
+    out = sub.call('sudo sh -c \"iptables-save > /etc/iptables.ipv4.nat\"', shell=True)
+    print "iptables save status"
+    print out
 
     #Restore configuration when network comes up
     if not os.path.isfile(oldPath):
@@ -90,5 +88,5 @@ def startRouter():
     output, errors = out.communicate()
     print output
     print errors
-    
+
     print "started router"

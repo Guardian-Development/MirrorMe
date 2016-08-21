@@ -11,6 +11,7 @@ iface lo inet loopback
 
 iface eth0 inet manual
 
+auto wlan0
 allow-hotplug wlan0
 iface wlan0 inet static
     address 172.24.1.1
