@@ -58,7 +58,7 @@ def configure():
 def enablePersistantState():
     filedata = None
     oldPath = '/etc/rc.local'
-    newPath = '.newFiles/rc.local'
+    newPath = './newFiles/rc.local'
 
     print("enabling persistant state...")
     #Backup NAT configuration
@@ -88,8 +88,16 @@ def enablePersistantState():
 def startRouter():
     #Start wireless router
     print("wirless router starting..")
-    sub.Popen(['sudo', 'service', 'hostapd', 'start'],
+    out = sub.Popen(['sudo', 'service', 'hostapd', 'start'],
                     stdout=sub.PIPE, stderr=sub.PIPE)
-    sub.Popen(['sudo', 'service', 'dnsmasq', 'start'],
+    output. errors = out.communicate()
+    print output
+    print errors
+
+    out = sub.Popen(['sudo', 'service', 'dnsmasq', 'start'],
                     stdout=sub.PIPE, stderr=sub.PIPE)
+    output, errors = out.communicate()
+    print output
+    print errors
+    
     print "started router"

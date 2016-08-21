@@ -8,9 +8,9 @@ def execute():
 
 def configureDNSMASQ():
     filedata = None
-    newPath = './dnsmasq.conf'
+    newPath = './newFiles/dnsmasq.conf'
     oldPath = '/etc/dnsmasq.conf'
-    
+
     print "created new dnsmasq conf file"
 
     if not os.path.isfile(newPath):
@@ -27,7 +27,3 @@ def configureDNSMASQ():
         print "writing new dnsmasq file"
 
     print "completed dnsmasq configuration"
-
-
-    
-    

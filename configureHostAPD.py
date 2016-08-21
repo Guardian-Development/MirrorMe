@@ -18,7 +18,7 @@ def createConfigFile():
 def populateConfigFile():
     filedata = None
     pathNameOld = '/etc/hostapd/hostapd.conf'
-    pathNameNew = '.newFiles/hostapdconfig.txt'
+    pathNameNew = './newFiles/hostapdconfig.txt'
 
     #check file exists
     if not os.path.isfile(pathNameNew):

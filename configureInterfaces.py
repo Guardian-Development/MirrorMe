@@ -29,7 +29,7 @@ def configureInterfaces():
 def configureStaticIP():
     filedata = None
     pathNameOld = '/etc/network/interfaces'
-    pathNameNew = '.newFiles/interfaces.txt'
+    pathNameNew = './newFiles/interfaces.txt'
 
     #check the file exists
     if not os.path.isfile(pathNameOld):
@@ -62,7 +62,7 @@ def restartServices():
     output, errors = out.communicate()
     print output
     print errors
-    
+
     out = sub.Popen(['sudo', 'ifup', 'wlan0'], stdout=sub.PIPE, stderr=sub.PIPE)
     output, errors = out.communicate()
     print output
