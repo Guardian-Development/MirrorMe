@@ -6,9 +6,9 @@ import subprocess as sub
 def execute():
     configure()
     enablePersistantState()
-    startRouter() 
+    startRouter()
 
-#configure the NAT to link the ethernet and wireless card allowing internet access. 
+#configure the NAT to link the ethernet and wireless card allowing internet access.
 def configure():
     filedata = None
     pathName = '/etc/sysctl.conf'
@@ -23,41 +23,59 @@ def configure():
         file.write("net.ipv4.ip_forward=1")
         print("ip forwarding added")
 
-    print("start translation for ip..") 
+    print("start translation for ip..")
     #make Linux command call to start translation
-    sub.Popen(['sudo', 'sh', '-c', '"echo 1 > /proc/sys/net/ipv4/ip_forward"' ],
+    out = sub.Popen(['sudo', 'sh', '-c', '"echo 1 > /proc/sys/net/ipv4/ip_forward"' ],
                     stdout=sub.PIPE, stderr=sub.PIPE)
+    output, errors = out.communicate()
+    print output
+    print errors
 
     #set up translation between ethernet port and wirless card
     print("Setting up translation between ethernet and wireless..")
-    sub.Popen(['sudo', 'iptables', '-t', 'nat', '-A', 'POSTROUTING', '-o', '-j', 'MASQUERADE'],
+    out = sub.Popen(['sudo', 'iptables', '-t', 'nat', '-A', 'POSTROUTING', '-o', '-j', 'MASQUERADE'],
                     stdout=sub.PIPE, stderr=sub.PIPE)
-    sub.Popen(['sudo', 'iptables', '-A', 'FORWARD', '-i', 'eth0', '-o', 'wlan0', '-m', 'state',
+    output, errors = out.communicate()
+    print output
+    print errors
+
+    out = sub.Popen(['sudo', 'iptables', '-A', 'FORWARD', '-i', 'eth0', '-o', 'wlan0', '-m', 'state',
                '--state', 'RELATED,ESTABLISHED', '-j', 'ACCEPT'],
                     stdout=sub.PIPE, stderr=sub.PIPE)
+    output, errors = out.communicate()
+    print output
+    print errors
+
     sub.Popen(['sudo', 'iptables', '-A', 'FORWARD', '-i', 'wlan0', '-o', 'eth0', '-j', 'ACCEPT'],
                     stdout=sub.PIPE, stderr=sub.PIPE)
-    print("configure NAT completed") 
+    output, errors = out.communicate()
+    print output
+    print errors
 
-#during raspberry pi restarts keep the network enabled. 
+    print("configure NAT completed")
+
+#during raspberry pi restarts keep the network enabled.
 def enablePersistantState():
     filedata = None
     oldPath = '/etc/rc.local'
-    newPath = './rc.local'
+    newPath = '.newFiles/rc.local'
 
-    print("enabling persistant state...") 
+    print("enabling persistant state...")
     #Backup NAT configuration
-    sub.Popen(['sudo', 'sh', '-c', '"iptables-save > /etc/iptables.ipv4.nat"' ],
+    out = sub.Popen(['sudo', 'sh', '-c', '"iptables-save > /etc/iptables.ipv4.nat"' ],
                     stdout=sub.PIPE, stderr=sub.PIPE)
-    
+    output, errors = out.communicate()
+    print output
+    print errors
+
     #Restore configuration when network comes up
     if not os.path.isfile(oldPath):
         print("can't find rc.local file")
         sys.exit(1)
     if not os.path.isfile(newPath):
         print "can't find new rc.local file"
-    
-    
+
+
     with open(newPath, 'r') as file:
         filedata = file.read()
         print("read config changes")
@@ -65,11 +83,11 @@ def enablePersistantState():
         file.write(filedata)
         print "wrote changes to rc.local file"
 
-    print("persistant state enabled") 
+    print("persistant state enabled")
 
 def startRouter():
     #Start wireless router
-    print("wirless router starting..") 
+    print("wirless router starting..")
     sub.Popen(['sudo', 'service', 'hostapd', 'start'],
                     stdout=sub.PIPE, stderr=sub.PIPE)
     sub.Popen(['sudo', 'service', 'dnsmasq', 'start'],

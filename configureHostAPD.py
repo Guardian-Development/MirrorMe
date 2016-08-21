@@ -11,13 +11,14 @@ def execute():
 def createConfigFile():
     out = sub.Popen(['sudo', 'touch', '/etc/hostapd/hostapd.conf'], stdout=sub.PIPE, stderr=sub.PIPE)
     output, errors = out.communicate()
+    print output
     print errors
     print "completed creating the hostapd.conf file (empty)"
 
 def populateConfigFile():
     filedata = None
     pathNameOld = '/etc/hostapd/hostapd.conf'
-    pathNameNew = './hostapdconfig.txt'
+    pathNameNew = '.newFiles/hostapdconfig.txt'
 
     #check file exists
     if not os.path.isfile(pathNameNew):
@@ -60,13 +61,3 @@ def setupOnBootConfigFile():
         print "completed writing to hostapd default file"
 
     print "completed the setup of the boot config file"
-
-    
-        
-
-
-
-
-
-
-    
